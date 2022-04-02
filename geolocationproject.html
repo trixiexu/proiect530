@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lan ="en" and dir="Itr">
+
+    <head>
+        <meta charset = "utf-8">
+        <title> IP Address Look Up: </title>
+        <link rel="stylesheet" href="projecthtmlcss.css">
+        
+        <!-- Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin="">
+        </script>
+        
+
+        <!--End of Leaflet -->
+
+        <!-- LOG IN Json -->
+            <style>
+                .hidden {
+                display: none;
+            }
+    </style>
+    </head>
+    <body>
+
+        <!-- Login Form-->
+        <div id='loginForm'>
+          <form class="box" action ="login.html" method= "POST"></form>
+          <h1> Login </h1>
+          <input type ="text" name = "" placeholder="Enter Username" id="username">
+          <input type ="password" name="" placeholder="Enter Password" id="password">
+          <input type ="submit" name="" value = "Login" id='loginButton'>
+        </div>
+        
+          <!-- End of Login Form-->
+
+        <div id='mainSection' class='hidden'>
+          IP Address: <input type="text" id="myText" value="70.26.74.250">
+          <p>Click the button to show your location</p>
+          <button id='mybutton'>Try it</button>
+          
+  
+          <p id="longitude"></p>
+          <p id="latitude"></p>
+  
+          <div id="map"></div>
+        </div>
+
+
+
+        <!-- IPFind JSON , Leaflet Map -->
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type= "text/javascript">
+        var map = null;
+        var users = [{username: "admin", password: "root"}]
+        function myFunction() {
+            var ip_address = document.getElementById("myText").value;
+  
+            var xmlhttp = new XMLHttpRequest();
+            var auth = '682b9c86-0df8-42c8-aad4-a9adcee65476';
+            var url = "https://ipfind.co/?auth=" + auth + "&ip=" + ip_address;
+  
+            console.log(url);
+
+
+            xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(this.responseText);
+                console.log(result);
+                document.getElementById("longitude").innerHTML = result.longitude;
+                document.getElementById("latitude").innerHTML = result.latitude;
+                
+                console.log("point A");
+                    var latlng = L.latLng(result.latitude, result.longitude);
+              if (map != null) {
+                map.remove()
+              }
+                    map = L.map('map',{
+                    center: latlng,
+                    zoom: 13,
+                });
+                console.log("point B")
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'pk.eyJ1IjoidHJpeGlleHUiLCJhIjoiY2wxZTN6bWUzMDF3aDNibXN2dG1pN3AzOCJ9.iSE46t5DK-YpFzHMwsrCbw'
+                }).addTo(map);                                             
+            
+                }
+            };
+
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+        }
+
+        function login() {
+          var username = document.getElementById('username').value
+          var password = document.getElementById('password').value
+          for (var user of users) {
+            if (user.username === username && user.password === password) {
+              document.getElementById('mainSection').classList.remove('hidden')
+              document.getElementById('loginForm').classList.add('hidden')
+              return;
+            }
+          }
+        }
+        document.getElementById('loginButton').addEventListener('click', login)
+        document.getElementById('mybutton').addEventListener('click', myFunction)
+
+        </script>
+
+
+
+        <!--Leaflet Div-->
+
+        
+
+
+
+    </body>
+
+</html>
+
